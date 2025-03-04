@@ -1,8 +1,8 @@
-
 import React, { useState, useCallback } from 'react';
 import { Upload, Image as ImageIcon, Video, X, AlertCircle, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { analyzeMedia } from '@/lib/deepfakeDetection';
+import { useNavigate } from 'react-router-dom';
 
 const UploadSection = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -13,6 +13,7 @@ const UploadSection = () => {
   const [result, setResult] = useState<{ real: number; fake: number } | null>(null);
   
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -39,7 +40,6 @@ const UploadSection = () => {
   };
 
   const processFile = (uploadedFile: File) => {
-    // Check file type
     if (!uploadedFile.type.startsWith('image/') && !uploadedFile.type.startsWith('video/')) {
       toast({
         title: "Unsupported file type",
@@ -49,7 +49,6 @@ const UploadSection = () => {
       return;
     }
 
-    // Check file size (limit to 10MB)
     if (uploadedFile.size > 10 * 1024 * 1024) {
       toast({
         title: "File too large",
@@ -62,14 +61,12 @@ const UploadSection = () => {
     setFile(uploadedFile);
     setResult(null);
     
-    // Create preview
     const fileReader = new FileReader();
     fileReader.onload = () => {
       setPreview(fileReader.result as string);
     };
     fileReader.readAsDataURL(uploadedFile);
     
-    // Set file type
     if (uploadedFile.type.startsWith('image/')) {
       setFileType('image');
     } else if (uploadedFile.type.startsWith('video/')) {
@@ -90,7 +87,6 @@ const UploadSection = () => {
     setIsAnalyzing(true);
     
     try {
-      // In a real app, you would send the file to a backend API
       const analysisResult = await analyzeMedia(file);
       setResult(analysisResult);
       
@@ -99,6 +95,18 @@ const UploadSection = () => {
         description: analysisResult.fake > 80 
           ? "This media has a high probability of being AI-generated." 
           : "This media appears to be authentic.",
+      });
+      
+      navigate('/results', {
+        state: {
+          result: analysisResult,
+          fileData: {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            url: preview
+          }
+        }
       });
     } catch (error) {
       console.error('Analysis error:', error);
@@ -123,7 +131,6 @@ const UploadSection = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
-          {/* Upload Area */}
           <div className="animate-fade-up" style={{ animationDelay: '0.1s' }}>
             {!file ? (
               <div
@@ -201,7 +208,6 @@ const UploadSection = () => {
             )}
           </div>
 
-          {/* Results Area */}
           <div className="glass rounded-xl p-8 animate-fade-up" style={{ animationDelay: '0.2s' }}>
             <h3 className="text-xl font-bold mb-6">Analysis Results</h3>
             

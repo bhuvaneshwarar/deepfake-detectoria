@@ -5,6 +5,8 @@
 export interface DetectionResult {
   real: number;
   fake: number;
+  frameSuspects?: { timestamp: number; confidence: number }[];
+  videoLength?: number;
 }
 
 /**
@@ -22,6 +24,8 @@ export const analyzeMedia = async (file: File): Promise<DetectionResult> => {
       // For demonstration purposes, generate random results
       // In a real app, this would be the result from a machine learning model
       let fakeScore: number;
+      let frameSuspects: { timestamp: number; confidence: number }[] = [];
+      let videoLength: number | undefined = undefined;
       
       // For demonstration purpose, generate more varied results
       // Images with "fake" in the name will have higher fake scores
@@ -34,11 +38,37 @@ export const analyzeMedia = async (file: File): Promise<DetectionResult> => {
       
       const realScore = 100 - fakeScore;
       
-      console.log("Analysis complete:", { real: realScore, fake: fakeScore });
+      // If it's a video, generate simulated frame analysis data
+      if (file.type.startsWith('video/')) {
+        // Simulate a video of random length between 10-60 seconds
+        videoLength = Math.floor(Math.random() * 50) + 10;
+        
+        // Generate 3-7 suspicious frames for demonstration
+        const suspiciousFramesCount = Math.floor(Math.random() * 5) + 3;
+        
+        for (let i = 0; i < suspiciousFramesCount; i++) {
+          frameSuspects.push({
+            // Random timestamp within video length
+            timestamp: Math.floor(Math.random() * videoLength),
+            // Random confidence level for this frame
+            confidence: Math.floor(Math.random() * 100)
+          });
+        }
+        
+        // Sort by timestamp
+        frameSuspects.sort((a, b) => a.timestamp - b.timestamp);
+      }
+      
+      console.log("Analysis complete:", { 
+        real: realScore, 
+        fake: fakeScore,
+        ...(videoLength ? { videoLength, frameSuspects } : {})
+      });
       
       resolve({
         real: realScore,
-        fake: fakeScore
+        fake: fakeScore,
+        ...(videoLength ? { videoLength, frameSuspects } : {})
       });
     }, 3000); // 3 second delay to simulate processing
   });
@@ -64,4 +94,13 @@ export const getDetectionMetrics = async (analysisId: string): Promise<any> => {
     textureAnalysis: Math.random() * 100,
     metadataAnalysis: Math.random() * 100,
   };
+};
+
+/**
+ * Format seconds to MM:SS format
+ */
+export const formatTimestamp = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
 };

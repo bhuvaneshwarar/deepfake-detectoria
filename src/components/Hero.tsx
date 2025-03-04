@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowDown } from 'lucide-react';
+import { ArrowDown, Video, ShieldCheck } from 'lucide-react';
 
 const Hero = () => {
   return (
@@ -14,32 +14,35 @@ const Hero = () => {
       <div className="max-w-4xl text-center space-y-6 animate-fade-up">
         <div className="inline-block mb-4">
           <span className="inline-flex items-center py-1 px-3 rounded-full text-xs font-medium bg-primary/10 text-primary">
-            Advanced AI Deepfake Detection
+            <Video className="w-3 h-3 mr-1" />
+            Video Deepfake Detection
           </span>
         </div>
         
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
-          <span className="block">Detect Manipulated Media</span>
-          <span className="block text-primary">With Precision</span>
+          <span className="block">Identify AI-Generated</span>
+          <span className="block text-primary">Video Manipulations</span>
         </h1>
         
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Our cutting-edge technology analyzes images and videos to identify AI-generated 
-          deepfakes with unparalleled accuracy and transparency.
+          Our advanced technology analyzes videos frame-by-frame to detect synthetic 
+          media and deepfakes with high accuracy and detailed explanations.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
           <a 
             href="#upload"
-            className="button-hover rounded-lg bg-primary text-primary-foreground font-medium px-8 py-3 text-center"
+            className="button-hover rounded-lg bg-primary text-primary-foreground font-medium px-8 py-3 text-center flex items-center justify-center"
           >
-            Try It Now
+            <Video className="w-4 h-4 mr-2" />
+            Analyze Video Now
           </a>
           <a 
             href="#how-it-works"
-            className="button-hover rounded-lg bg-secondary text-secondary-foreground font-medium px-8 py-3 text-center"
+            className="button-hover rounded-lg bg-secondary text-secondary-foreground font-medium px-8 py-3 text-center flex items-center justify-center"
           >
-            Learn More
+            <ShieldCheck className="w-4 h-4 mr-2" />
+            How It Works
           </a>
         </div>
       </div>
